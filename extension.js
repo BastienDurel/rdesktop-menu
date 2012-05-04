@@ -34,8 +34,13 @@ const RDesktopMenu = new Lang.Class({
 
     _createItems: function() {
         // TODO: seek in $HOME/.grdesktop ; use ini-files
-        this.conf = [{name: "devsrv2", 
+        this.conf = [{
+                      name: "devsrv2",
                       run: "/home/bastien/.grdesktop/devsrv2.conf"
+                    },
+                    {
+                      name: "ICRC",
+                      run: "/home/bastien/.grdesktop/icrc.conf"
                     }];
 
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
@@ -43,7 +48,7 @@ const RDesktopMenu = new Lang.Class({
             //let icon = this.devices[srvid].iconFactory(RDSK_ICON_SIZE);
             let icon = new St.Icon({icon_size: RDSK_ICON_SIZE, 
                                     icon_type: St.IconType.FULLCOLOR, 
-                                    icon_name: 'server'});
+                                    icon_name: 'network-server-symbolic'});
             this.items[srvid].addActor(icon, { align: St.Align.END });
             this.items[srvid].conf = this.conf[srvid];
             this.menu.addMenuItem(this.items[srvid]);
