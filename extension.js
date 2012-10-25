@@ -45,7 +45,6 @@ const RDesktopMenu = new Lang.Class({
             //let icon = this.devices[srvid].iconFactory(RDSK_ICON_SIZE);
             let icon_name = this.conf[srvid].icon_name || 'computer-symbolic';
             let icon = new St.Icon({icon_size: RDSK_ICON_SIZE, 
-                                    icon_type: St.IconType.FULLCOLOR, 
                                     icon_name: icon_name});
             this.items[srvid].addActor(icon, { align: St.Align.END });
             this.items[srvid].conf = this.conf[srvid];
