@@ -70,6 +70,11 @@ const RDesktopMenu = new Lang.Class({
         return kf.has_key(group, key) ? ' -' + sw + ' ' + kf.get_string(group, key) : '';
     },
 
+    _getExtra: function(kf, group) {
+        var key = 'extra';
+        return kf.has_key(group, key) ? kf.get_string(group, key) : '';
+    },
+
     _listDir: function(file) {
         this.conf = [];
         let enumerator = file.enumerate_children(Gio.FILE_ATTRIBUTE_STANDARD_NAME,
@@ -110,8 +115,11 @@ const RDesktopMenu = new Lang.Class({
                     let user = this._getSw(kf, name, 'user', 'u');
                     let pwd = this._getSw(kf, name, 'password', 'p');
                     let domain = this._getSw(kf, name, 'domain', 'd');
-                    current.run = "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 "
-                     + user + pwd + domain + k + res + " -T " + t + " -x " + net + ' ' + host;
+                    let extra = this._getExtra(kf, name);
+                    current.run =
+                        "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 "
+                        + user + pwd + domain + k + res + " -T " + t
+                        + " -x " + net + ' ' + extra + ' ' + host;
                 }
 
                 this.conf.push(current);
