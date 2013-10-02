@@ -21,14 +21,21 @@ const DEFAULT_NETWORK = 'lan';
 
 const RDesktopMenu = new Lang.Class({
     Name: 'RDesktopMenu.RDesktopMenu',
-    Extends: PanelMenu.SystemStatusButton,
+    Extends: PanelMenu.Button,
 
     _init: function() {
         this.parent('server');
         this.items = [];
         this._createItems();
-        this.setName("RDP");
-        this.setIcon('network-workgroup-symbolic');
+        let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+        let icon = new St.Icon({ icon_name: 'network-workgroup-symbolic',
+                                 style_class: 'system-status-icon' });
+        hbox.add_child(icon);
+        hbox.add_child(new St.Label({ text: '\u25BE',
+                                      y_expand: true,
+                                      y_align: Clutter.ActorAlign.CENTER }));
+        this.actor.add_child(hbox);
+        this.actor.show();
     },
 
     destroy: function() {
@@ -46,7 +53,7 @@ const RDesktopMenu = new Lang.Class({
             let icon_name = this.conf[srvid].icon_name || 'computer-symbolic';
             let icon = new St.Icon({icon_size: RDSK_ICON_SIZE, 
                                     icon_name: icon_name});
-            this.items[srvid].addActor(icon, { align: St.Align.END });
+            this.items[srvid].actor.add_actor(icon, { align: St.Align.END });
             this.items[srvid].conf = this.conf[srvid];
             this.menu.addMenuItem(this.items[srvid]);
             this.items[srvid].connect('activate', function(actor,event) {
