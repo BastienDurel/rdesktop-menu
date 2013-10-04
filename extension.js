@@ -146,7 +146,7 @@ function init() {
 let _indicator;
 
 function enable() {
-    let _indicator = new RDesktopMenu;
+    _indicator = new RDesktopMenu;
     global.log(_indicator);
     Main.panel._rdpindicator = _indicator;
     Main.panel.addToStatusArea('rdesktop-menu', _indicator);
