@@ -20,6 +20,39 @@ const RDSK_ICON_SIZE = 22;
 const DEFAULT_KEYBOARD = 'en-us';
 const DEFAULT_NETWORK = 'lan';
 
+const RDesktopMenuItem = new Lang.Class({
+    Name: 'RDesktopMenu.RDesktopMenuItem',
+    Extends: PopupMenu.PopupBaseMenuItem,
+
+    _init: function(conf) {
+	    this.parent();
+	    global.log('init ' + conf.name);
+
+	    this.label = new St.Label({ text: conf.name });
+	    this.actor.add(this.label, { expand: true });
+            this.actor.label_actor = this.label;
+
+	    this.conf = conf;
+
+      let icon_name = conf.icon_name || 'computer-symbolic';
+	    let icon = new St.Icon({ icon_name: icon_name, 
+	                             icon_size: RDSK_ICON_SIZE });
+	    let button = new St.Button({ child: icon });
+	    button.connect('clicked', Lang.bind(this, this._run));
+	    this.actor.add(button);
+    },
+
+    _run: function() {
+      try {
+          GLib.spawn_command_line_async(this.conf.run);
+      }
+      catch (err) {
+          Main.notifyError('Error', err.message);
+      }
+    }
+});
+
+
 const RDesktopMenu = new Lang.Class({
     Name: 'RDesktopMenu.RDesktopMenu',
     Extends: PanelMenu.Button,
@@ -27,7 +60,6 @@ const RDesktopMenu = new Lang.Class({
     _init: function() {
         this.parent('server');
         this.items = [];
-        this._createItems();
         let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         let icon = new St.Icon({ icon_name: 'network-workgroup-symbolic',
                                  style_class: 'system-status-icon' });
@@ -36,6 +68,8 @@ const RDesktopMenu = new Lang.Class({
                                       y_expand: true,
                                       y_align: Clutter.ActorAlign.CENTER }));
         this.actor.add_child(hbox);
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this._createItems();
         this.actor.show();
     },
 
@@ -44,27 +78,15 @@ const RDesktopMenu = new Lang.Class({
     },
 
     _createItems: function() {
+        global.log('starting _createItems()');
         let dir = Gio.file_new_for_path(GLib.get_user_config_dir () + "/grdesktop");
         this.conf = [];
         if (dir.query_exists(null)) this._listDir(dir);
 
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
-            this.items[srvid] = new PopupMenu.PopupMenuItem(this.conf[srvid].name);
-            //let icon = this.devices[srvid].iconFactory(RDSK_ICON_SIZE);
-            let icon_name = this.conf[srvid].icon_name || 'computer-symbolic';
-            let icon = new St.Icon({icon_size: RDSK_ICON_SIZE, 
-                                    icon_name: icon_name});
-            this.items[srvid].actor.add_actor(icon, { align: St.Align.END });
-            this.items[srvid].conf = this.conf[srvid];
-            this.menu.addMenuItem(this.items[srvid]);
-            this.items[srvid].connect('activate', function(actor,event) {
-                try {
-                    GLib.spawn_command_line_async(actor.conf.run);
-                }
-                catch (err) {
-                    Main.notifyError('Error', err.message);
-                }
-            });
+            
+	        let item = new RDesktopMenuItem(this.conf[srvid]);
+	        this.menu.addMenuItem(item, 0);
         }
 
     },
