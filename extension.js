@@ -6,6 +6,7 @@ const Lang = imports.lang;
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
 const Gio = imports.gi.Gio;
+const Clutter = imports.gi.Clutter;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -145,7 +146,7 @@ function init() {
 let _indicator;
 
 function enable() {
-    _indicator = new RDesktopMenu;
+    let _indicator = new RDesktopMenu;
     global.log(_indicator);
     Main.panel._rdpindicator = _indicator;
     Main.panel.addToStatusArea('rdesktop-menu', _indicator);
