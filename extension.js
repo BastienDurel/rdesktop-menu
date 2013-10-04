@@ -58,7 +58,7 @@ const RDesktopMenu = new Lang.Class({
     Extends: PanelMenu.Button,
 
     _init: function() {
-        this.parent('server');
+        this.parent(0, 'server');
         this.items = [];
         let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         let icon = new St.Icon({ icon_name: 'network-workgroup-symbolic',
@@ -86,7 +86,7 @@ const RDesktopMenu = new Lang.Class({
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
             
 	        let item = new RDesktopMenuItem(this.conf[srvid]);
-	        this.menu.addMenuItem(item, 0);
+	        this.menu.addMenuItem(item);
         }
 
     },
@@ -168,7 +168,7 @@ function init() {
 let _indicator;
 
 function enable() {
-    _indicator = new RDesktopMenu;
+    _indicator = new RDesktopMenu();
     global.log(_indicator);
     Main.panel._rdpindicator = _indicator;
     Main.panel.addToStatusArea('rdesktop-menu', _indicator);
