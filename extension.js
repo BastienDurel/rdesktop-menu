@@ -39,6 +39,7 @@ const RDesktopMenuItem = new Lang.Class({
 	                             icon_size: RDSK_ICON_SIZE });
 	    let button = new St.Button({ child: icon });
 	    button.connect('clicked', Lang.bind(this, this._run));
+	    this.actor.connect('button-press-event', Lang.bind(this, this._run));
 	    this.actor.add(button);
     },
 
