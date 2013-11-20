@@ -45,6 +45,7 @@ const RDesktopMenuItem = new Lang.Class({
 
     _run: function() {
       try {
+          global.log("Try to run: '" + this.conf.run + "'");
           GLib.spawn_command_line_async(this.conf.run);
       }
       catch (err) {
@@ -100,6 +101,11 @@ const RDesktopMenu = new Lang.Class({
     _getSw: function(kf, group, key, sw) {
         return kf.has_key(group, key) ? ' -' + sw + ' ' + kf.get_string(group, key) : '';
     },
+    
+    _getFreeRdp: function(kf, group) {
+        var key = 'freerdp';
+        return kf.has_key(group, key) && kf.get_string(group, key) == '1';
+    },
 
     _getExtra: function(kf, group) {
         var key = 'extra';
@@ -147,10 +153,19 @@ const RDesktopMenu = new Lang.Class({
                     let pwd = this._getSw(kf, name, 'password', 'p');
                     let domain = this._getSw(kf, name, 'domain', 'd');
                     let extra = this._getExtra(kf, name);
-                    current.run =
-                        "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 "
-                        + user + pwd + domain + k + res + " -T " + t
-                        + " -x " + net + ' ' + extra + ' ' + host;
+                    let freerdp = this._getFreeRdp(kf, name);
+                    if (freerdp) {
+                      current.run =
+                          "xfreerdp --ignore-certificate --plugin cliprdr -0 "
+                          + user + pwd + domain + k + res + " -T " + t
+                          + " -x " + net + ' ' + extra + ' ' + host;
+                    }
+                    else {
+                      current.run =
+                          "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 "
+                          + user + pwd + domain + k + res + " -T " + t
+                          + " -x " + net + ' ' + extra + ' ' + host;
+                    }
                 }
 
                 this.conf.push(current);
