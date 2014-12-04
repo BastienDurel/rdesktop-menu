@@ -101,6 +101,10 @@ const RDesktopMenu = new Lang.Class({
     _getSw: function(kf, group, key, sw) {
         return kf.has_key(group, key) ? ' -' + sw + ' ' + kf.get_string(group, key) : '';
     },
+
+    _getXFSw: function(kf, group, key, sw) {
+        return kf.has_key(group, key) ? ' /' + sw + ':' + kf.get_string(group, key) : '';
+    },
     
     _getFreeRdp: function(kf, group) {
         var key = 'freerdp';
@@ -156,9 +160,11 @@ const RDesktopMenu = new Lang.Class({
                     let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
                       current.run =
-                          "xfreerdp --ignore-certificate --plugin cliprdr -0 "
-                          + user + pwd + domain + k + res + " -T " + t
-                          + " -x " + net + ' ' + extra + ' ' + host;
+                          "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 "
+                          + this._getXFSw(kf, name, 'user', 'u')
+                          + this._getXFSw(kf, name, 'password', 'p') 
+                          + this._getXFSw(kf, name, 'domain', 'd') + " /t:" + t
+                          + ' /v:' + host;
                     }
                     else {
                       current.run =
