@@ -160,7 +160,7 @@ const RDesktopMenu = new Lang.Class({
                     let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
                       current.run =
-                          "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 "
+                          "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
                           + this._getXFSw(kf, name, 'user', 'u')
                           + this._getXFSw(kf, name, 'password', 'p') 
                           + this._getXFSw(kf, name, 'domain', 'd') + " /t:" + t
@@ -168,7 +168,7 @@ const RDesktopMenu = new Lang.Class({
                     }
                     else {
                       current.run =
-                          "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 "
+                          "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp "
                           + user + pwd + domain + k + res + " -T " + t
                           + " -x " + net + ' ' + extra + ' ' + host;
                     }
