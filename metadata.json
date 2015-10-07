@@ -1,9 +1,9 @@
 {
-"extension-id": "rdesktop-menu",
-"uuid": "rdesktop-menu@BastienDurel.github.com",
-"name": "Rdesktop launcher",
-"description": "Add a servers status menu for quickly running rdesktop",
-    "shell-version": [ "3.10", "3.12", "3.14", "3.16" ],
-"url": "http://localhost/rdesktop-menu"
+    "extension-id": "rdesktop-menu",
+    "uuid": "rdesktop-menu@BastienDurel.github.com",
+    "name": "Rdesktop launcher",
+    "description": "Add a servers status menu for quickly running rdesktop",
+    "shell-version": [ "3.10", "3.12", "3.14", "3.16", "3.18" ],
+    "url": "http://localhost/rdesktop-menu"
 }
 
