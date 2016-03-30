@@ -5,6 +5,6 @@ deploy:
     - git remote add github git@github.com:BastienDurel/rdesktop-menu.git || true
     - git pull origin master
     - git fetch origin
-    - git push --mirror github
+    - git push github
   tags:
     - docker
