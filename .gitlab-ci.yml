@@ -1,0 +1,8 @@
+image: bastien/deploy
+
+deploy:
+  script:
+    - git remote add github git@github.com:BastienDurel/rdesktop-menu.git
+    - git push --mirror github
+  tags:
+    - docker
