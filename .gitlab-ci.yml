@@ -3,6 +3,8 @@ image: bastien/deploy
 deploy:
   script:
     - git remote add github git@github.com:BastienDurel/rdesktop-menu.git || true
+    - git pull master
+    - git fetch
     - git push --mirror github
   tags:
     - docker
