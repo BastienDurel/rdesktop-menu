@@ -54,6 +54,34 @@ const RDesktopMenuItem = new Lang.Class({
     }
 });
 
+const RDesktopRefreshMenuItem = new Lang.Class({
+    Name: 'RDesktopMenu.RDesktopMenuItem',
+    Extends: PopupMenu.PopupBaseMenuItem,
+
+    _init: function(conf) {
+	      this.parent();
+	      this.label = new St.Label({ text: 'Refresh' });
+	      this.actor.add(this.label, { expand: true });
+        this.actor.label_actor = this.label;
+
+	      let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
+	                               icon_size: RDSK_ICON_SIZE });
+	      let button = new St.Button({ child: icon });
+	      button.connect('clicked', Lang.bind(this, this._run));
+	      this.actor.connect('button-press-event', Lang.bind(this, this._run));
+	      this.actor.add(button);
+    },
+
+    _run: function() {
+        try {
+            _indicator.refresh()
+        }
+        catch (err) {
+            Main.notifyError('Error', err.message);
+        }
+    }
+});
+
 
 const RDesktopMenu = new Lang.Class({
     Name: 'RDesktopMenu.RDesktopMenu',
@@ -91,6 +119,14 @@ const RDesktopMenu = new Lang.Class({
 	        this.menu.addMenuItem(item);
         }
 
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(new RDesktopRefreshMenuItem());
+
+    },
+
+    refresh: function() {
+        this.menu.removeAll();
+        this._createItems();
     },
 
     _getDef: function(kf, group, key, def) {
