@@ -25,32 +25,32 @@ const RDesktopMenuItem = new Lang.Class({
     Extends: PopupMenu.PopupBaseMenuItem,
 
     _init: function(conf) {
-	    this.parent();
-	    global.log('init ' + conf.name);
+	      this.parent();
+	      global.log('init ' + conf.name);
 
-	    this.label = new St.Label({ text: conf.name });
-	    this.actor.add(this.label, { expand: true });
-            this.actor.label_actor = this.label;
+	      this.label = new St.Label({ text: conf.name });
+	      this.actor.add(this.label, { expand: true });
+        this.actor.label_actor = this.label;
 
-	    this.conf = conf;
+	      this.conf = conf;
 
-      let icon_name = conf.icon_name || 'computer-symbolic';
-	    let icon = new St.Icon({ icon_name: icon_name, 
-	                             icon_size: RDSK_ICON_SIZE });
-	    let button = new St.Button({ child: icon });
-	    button.connect('clicked', Lang.bind(this, this._run));
-	    this.actor.connect('button-press-event', Lang.bind(this, this._run));
-	    this.actor.add(button);
+        let icon_name = conf.icon_name || 'computer-symbolic';
+	      let icon = new St.Icon({ icon_name: icon_name, 
+	                               icon_size: RDSK_ICON_SIZE });
+	      let button = new St.Button({ child: icon });
+	      button.connect('clicked', Lang.bind(this, this._run));
+	      this.actor.connect('button-press-event', Lang.bind(this, this._run));
+	      this.actor.add(button);
     },
 
     _run: function() {
-      try {
-          global.log("Try to run: '" + this.conf.run + "'");
-          GLib.spawn_command_line_async(this.conf.run);
-      }
-      catch (err) {
-          Main.notifyError('Error', err.message);
-      }
+        try {
+            global.log("Try to run: '" + this.conf.run + "'");
+            GLib.spawn_command_line_async(this.conf.run);
+        }
+        catch (err) {
+            Main.notifyError('Error', err.message);
+        }
     }
 });
 
@@ -109,7 +109,8 @@ const RDesktopMenu = new Lang.Class({
 
     _createItems: function() {
         global.log('starting _createItems()');
-        let dir = Gio.file_new_for_path(GLib.get_user_config_dir () + "/grdesktop");
+        let dir = Gio.file_new_for_path(GLib.get_user_config_dir ()
+                                        + "/grdesktop");
         this.conf = [];
         if (dir.query_exists(null)) this._listDir(dir);
 
@@ -135,11 +136,13 @@ const RDesktopMenu = new Lang.Class({
 
 
     _getSw: function(kf, group, key, sw) {
-        return kf.has_key(group, key) ? ' -' + sw + ' ' + kf.get_string(group, key) : '';
+        return kf.has_key(group, key) ? ' -' + sw + ' ' +
+            kf.get_string(group, key) : '';
     },
 
     _getXFSw: function(kf, group, key, sw) {
-        return kf.has_key(group, key) ? ' /' + sw + ':' + kf.get_string(group, key) : '';
+        return kf.has_key(group, key) ? ' /' + sw + ':' +
+            kf.get_string(group, key) : '';
     },
     
     _getFreeRdp: function(kf, group) {
@@ -154,23 +157,25 @@ const RDesktopMenu = new Lang.Class({
 
     _listDir: function(file) {
         this.conf = [];
-        let enumerator = file.enumerate_children(Gio.FILE_ATTRIBUTE_STANDARD_NAME,
-                                      Gio.FileQueryInfoFlags.NONE, null);
-	    if (enumerator == null) throw error;
-	    let info;
+        let enumerator = file.enumerate_children(
+            Gio.FILE_ATTRIBUTE_STANDARD_NAME, Gio.FileQueryInfoFlags.NONE,
+            null);
+	      if (enumerator == null) throw error;
+	      let info;
         let re = /.*\.conf$/;
-	    while ((info = enumerator.next_file(null)) != null) {
-		    if (re.test(info.get_name())) {
+	      while ((info = enumerator.next_file(null)) != null) {
+		        if (re.test(info.get_name())) {
                 let kf = new GLib.KeyFile;
-                // Monkey patching: gir file describes has_key, but it's not present
-		        if (kf.has_key == undefined) kf.has_key = function(group, key) {
+                // Monkey patching: gir file describes has_key,
+                // but it's not present
+		            if (kf.has_key == undefined) kf.has_key = function(group, key) {
                     try {
-			            let keys = kf.get_keys(group);
-			            return keys[0].indexOf(key) != -1;
+			                  let keys = kf.get_keys(group);
+			                  return keys[0].indexOf(key) != -1;
                     } catch (e) { return false; }
-		        }
+		            }
                 try {
-		            kf.load_from_file(file.get_path() + "/" + info.get_name(), 
+		                kf.load_from_file(file.get_path() + "/" + info.get_name(), 
                                       GLib.KeyFileFlags.NONE);
                 } catch (e) {
                     global.log("Cannot load " + info.get_name() + ": " + e);
@@ -178,13 +183,14 @@ const RDesktopMenu = new Lang.Class({
                 }
                 let name = kf.get_start_group();
                 let current = { name: name };
-                
+
                 if (kf.has_key(name, 'icon_name'))
                     current.icon_name = kf.get_string(name, 'icon_name');
                 if (kf.has_key(name, 'run')) 
                     current.run = kf.get_string(name, 'run');
                 else {
-                    let net = this._getDef(kf, name, 'network', DEFAULT_NETWORK);
+                    let net = this._getDef(kf, name, 'network',
+                                           DEFAULT_NETWORK);
                     let k = this._getSw(kf, name, 'keyboard', 'k');
                     let res = this._getSw(kf, name, 'resolution', 'g');
                     let host = this._getDef(kf, name, 'host', name);
@@ -195,18 +201,18 @@ const RDesktopMenu = new Lang.Class({
                     let extra = this._getExtra(kf, name);
                     let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
-                      current.run =
-                          "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
-                          + this._getXFSw(kf, name, 'user', 'u')
-                          + this._getXFSw(kf, name, 'password', 'p') 
-                          + this._getXFSw(kf, name, 'domain', 'd') + " /t:" + t
-                          + ' /v:' + host;
+                        current.run =
+                            "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                            + this._getXFSw(kf, name, 'user', 'u')
+                            + this._getXFSw(kf, name, 'password', 'p') 
+                            + this._getXFSw(kf, name, 'domain', 'd') + " /t:"
+                            + t + ' /v:' + host;
                     }
                     else {
-                      current.run =
-                          "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp "
-                          + user + pwd + domain + k + res + " -T " + t
-                          + " -x " + net + ' ' + extra + ' ' + host;
+                        current.run =
+                            "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp "
+                            + user + pwd + domain + k + res + " -T " + t
+                            + " -x " + net + ' ' + extra + ' ' + host;
                     }
                 }
 
