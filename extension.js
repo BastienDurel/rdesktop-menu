@@ -211,8 +211,8 @@ const RDesktopMenu = new Lang.Class({
                     else {
                         current.run =
                             "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp "
-                            + user + pwd + domain + k + res + " -T " + t
-                            + " -x " + net + ' ' + extra + ' ' + host;
+                            + user + pwd + domain + k + res + " -T '" + t
+                            + "' -x " + net + ' ' + extra + ' ' + host;
                     }
                 }
 
