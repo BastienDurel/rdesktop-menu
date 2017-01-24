@@ -205,8 +205,8 @@ const RDesktopMenu = new Lang.Class({
                             "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
                             + this._getXFSw(kf, name, 'user', 'u')
                             + this._getXFSw(kf, name, 'password', 'p') 
-                            + this._getXFSw(kf, name, 'domain', 'd') + " /t:"
-                            + t + ' /v:' + host;
+                            + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
+                            + t + "' /v:" + host;
                     }
                     else {
                         current.run =
