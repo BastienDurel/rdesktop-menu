@@ -202,7 +202,7 @@ const RDesktopMenu = new Lang.Class({
                     let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
                         current.run =
-                            "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                            "xfreerdp /cert-ignore /sec:rdp +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
                             + this._getXFSw(kf, name, 'user', 'u')
                             + this._getXFSw(kf, name, 'password', 'p') 
                             + this._getXFSw(kf, name, 'domain', 'd') + " /t:"
