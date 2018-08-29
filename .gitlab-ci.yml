@@ -1,4 +1,4 @@
-image: bastien/deploy
+image: localhost:5000/deploy
 
 deploy:
   script:
