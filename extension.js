@@ -155,6 +155,19 @@ const RDesktopMenu = new Lang.Class({
         return kf.has_key(group, key) ? kf.get_string(group, key) : '';
     },
 
+    _getXFRes: function(kf, group) {
+        var key = 'resolution';
+        if (kf.has_key(group, key)) {
+            var _res = kf.get_string(group, key);
+            var res = _res.split('x');
+            if (res && res.length == 2)
+                return ' /w:' + res[0] + ' /h:' + res[1];
+            else
+                global.log('Cannot parse resolution: ' + _res);
+        }
+        return ' /w:1275 /h:962';
+    },
+
     _listDir: function(file) {
         this.conf = [];
         let enumerator = file.enumerate_children(
@@ -202,7 +215,8 @@ const RDesktopMenu = new Lang.Class({
                     let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
                         current.run =
-                            "xfreerdp /cert-ignore +clipboard /w:1275 /h:962 /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                            "xfreerdp /cert-ignore +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                            + this._getXFRes(kf, name)
                             + this._getXFSw(kf, name, 'user', 'u')
                             + this._getXFSw(kf, name, 'password', 'p') 
                             + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
