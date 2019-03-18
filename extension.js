@@ -23,12 +23,11 @@ const DEFAULT_NETWORK = 'lan';
 
 let _indicator;
 
-const RDesktopMenuItem = new Lang.Class({
-    Name: 'RDesktopMenu.RDesktopMenuItem',
-    Extends: PopupMenu.PopupBaseMenuItem,
+var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    _construct: function(conf) {
-	      this.parent();
+    _init(conf) {
+        global.log('init ' + conf);
+        super._init(conf);
 	      global.log('init ' + conf.name);
 
 	      this.label = new St.Label({ text: conf.name });
@@ -44,9 +43,9 @@ const RDesktopMenuItem = new Lang.Class({
 	      button.connect('clicked', Lang.bind(this, this._run));
 	      this.actor.connect('button-press-event', Lang.bind(this, this._run));
 	      this.actor.add(button);
-    },
+    }
 
-    _run: function() {
+    _run() {
         try {
             global.log("Try to run: '" + this.conf.run + "'");
             GLib.spawn_command_line_async(this.conf.run);
@@ -55,14 +54,12 @@ const RDesktopMenuItem = new Lang.Class({
             Main.notifyError('Error', err.message);
         }
     }
-});
+};
 
-const RDesktopRefreshMenuItem = new Lang.Class({
-    Name: 'RDesktopMenu.RDesktopMenuItem',
-    Extends: PopupMenu.PopupBaseMenuItem,
+var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    _construct: function(conf) {
-	      this.parent();
+    _init(conf) {
+        super._init(conf);
 	      this.label = new St.Label({ text: 'Refresh' });
 	      this.actor.add(this.label, { expand: true });
         this.actor.label_actor = this.label;
@@ -73,9 +70,9 @@ const RDesktopRefreshMenuItem = new Lang.Class({
 	      button.connect('clicked', Lang.bind(this, this._run));
 	      this.actor.connect('button-press-event', Lang.bind(this, this._run));
 	      this.actor.add(button);
-    },
+    }
 
-    _run: function() {
+    _run() {
         try {
             _indicator.refresh()
         }
@@ -83,15 +80,13 @@ const RDesktopRefreshMenuItem = new Lang.Class({
             Main.notifyError('Error', err.message);
         }
     }
-});
+};
 
 
-const RDesktopMenu = new Lang.Class({
-    Name: 'RDesktopMenu.RDesktopMenu',
-    Extends: PanelMenu.Button,
+var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
 
-    _construct: function() {
-        this.parent(0, 'server');
+    _init() {
+        super._init(0, 'server');
         this.items = [];
         let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         let icon = new St.Icon({ icon_name: 'network-workgroup-symbolic',
@@ -104,13 +99,13 @@ const RDesktopMenu = new Lang.Class({
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._createItems();
         this.actor.show();
-    },
+    }
 
-    destroy: function() {
-        this.parent();
-    },
+    destroy() {
+        super.destroy();
+    }
 
-    _createItems: function() {
+    _createItems() {
         global.log('starting _createItems()');
         let dir = Gio.file_new_for_path(GLib.get_user_config_dir ()
                                         + "/grdesktop");
@@ -126,39 +121,38 @@ const RDesktopMenu = new Lang.Class({
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(new RDesktopRefreshMenuItem());
 
-    },
+    }
 
-    refresh: function() {
+    refresh() {
         this.menu.removeAll();
         this._createItems();
-    },
+    }
 
-    _getDef: function(kf, group, key, def) {
+    _getDef(kf, group, key, def) {
         return kf.has_key(group, key) ? kf.get_string(group, key) : def;
-    },
+    }
 
-
-    _getSw: function(kf, group, key, sw) {
+    _getSw(kf, group, key, sw) {
         return kf.has_key(group, key) ? ' -' + sw + ' ' +
             kf.get_string(group, key) : '';
-    },
+    }
 
-    _getXFSw: function(kf, group, key, sw) {
+    _getXFSw(kf, group, key, sw) {
         return kf.has_key(group, key) ? ' /' + sw + ':' +
             kf.get_string(group, key) : '';
-    },
+    }
     
-    _getFreeRdp: function(kf, group) {
+    _getFreeRdp(kf, group) {
         var key = 'freerdp';
         return kf.has_key(group, key) && kf.get_string(group, key) == '1';
-    },
+    }
 
-    _getExtra: function(kf, group) {
+    _getExtra(kf, group) {
         var key = 'extra';
         return kf.has_key(group, key) ? kf.get_string(group, key) : '';
-    },
+    }
 
-    _getXFRes: function(kf, group) {
+    _getXFRes(kf, group) {
         var key = 'resolution';
         if (kf.has_key(group, key)) {
             var _res = kf.get_string(group, key);
@@ -169,9 +163,9 @@ const RDesktopMenu = new Lang.Class({
                 global.log('Cannot parse resolution: ' + _res);
         }
         return ' /w:1275 /h:962';
-    },
+    }
 
-    _listDir: function(file) {
+    _listDir(file) {
         this.conf = [];
         let enumerator = file.enumerate_children(
             Gio.FILE_ATTRIBUTE_STANDARD_NAME, Gio.FileQueryInfoFlags.NONE,
@@ -197,32 +191,32 @@ const RDesktopMenu = new Lang.Class({
                     global.log("Cannot load " + info.get_name() + ": " + e);
                     continue;
                 }
-                let name = kf.get_start_group();
-                let current = { name: name };
+                let name0 = kf.get_start_group();
+                let current = { "name": name0 };
 
-                if (kf.has_key(name, 'icon_name'))
-                    current.icon_name = kf.get_string(name, 'icon_name');
-                if (kf.has_key(name, 'run')) 
-                    current.run = kf.get_string(name, 'run');
+                if (kf.has_key(name0, 'icon_name'))
+                    current.icon_name = kf.get_string(name0, 'icon_name');
+                if (kf.has_key(name0, 'run')) 
+                    current.run = kf.get_string(name0, 'run');
                 else {
-                    let net = this._getDef(kf, name, 'network',
+                    let net = this._getDef(kf, name0, 'network',
                                            DEFAULT_NETWORK);
-                    let k = this._getSw(kf, name, 'keyboard', 'k');
-                    let res = this._getSw(kf, name, 'resolution', 'g');
-                    let host = this._getDef(kf, name, 'host', name);
-                    let t = this._getDef(kf, name, 'title', host);
-                    let user = this._getSw(kf, name, 'user', 'u');
-                    let pwd = this._getSw(kf, name, 'password', 'p');
-                    let domain = this._getSw(kf, name, 'domain', 'd');
-                    let extra = this._getExtra(kf, name);
-                    let freerdp = this._getFreeRdp(kf, name);
+                    let k = this._getSw(kf, name0, 'keyboard', 'k');
+                    let res = this._getSw(kf, name0, 'resolution', 'g');
+                    let host = this._getDef(kf, name0, 'host', name0);
+                    let t = this._getDef(kf, name0, 'title', host);
+                    let user = this._getSw(kf, name0, 'user', 'u');
+                    let pwd = this._getSw(kf, name0, 'password', 'p');
+                    let domain = this._getSw(kf, name0, 'domain', 'd');
+                    let extra = this._getExtra(kf, name0);
+                    let freerdp = this._getFreeRdp(kf, name0);
                     if (freerdp) {
                         current.run =
                             "xfreerdp /cert-ignore /sec:rdp +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
-                            + this._getXFRes(kf, name)
-                            + this._getXFSw(kf, name, 'user', 'u')
-                            + this._getXFSw(kf, name, 'password', 'p') 
-                            + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
+                            + this._getXFRes(kf, name0)
+                            + this._getXFSw(kf, name0, 'user', 'u')
+                            + this._getXFSw(kf, name0, 'password', 'p') 
+                            + this._getXFSw(kf, name0, 'domain', 'd') + " '/t:"
                             + t + "' /v:" + host;
                     }
                     else {
@@ -240,22 +234,13 @@ const RDesktopMenu = new Lang.Class({
         }
 	}
 
-});
+};
 
 function init() {
     //Convenience.initTranslations();
 }
 
 function enable() {
-    /**
-     * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
-     */
-    if (true) {
-        RDesktopMenu = GObject.registerClass(
-            {GTypeName: 'RDesktopMenuIndicator'},
-            RDesktopMenu
-        );
-    }
     _indicator = new RDesktopMenu();
     global.log(_indicator);
     Main.panel._rdpindicator = _indicator;
@@ -268,3 +253,12 @@ function disable() {
     Main.panel._rdpindicator = null;
 }
 
+/**
+ * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
+ */
+if (true) {
+    RDesktopMenu = GObject.registerClass(
+        {GTypeName: 'RDesktopMenuIndicator'},
+        RDesktopMenu
+    );
+}
