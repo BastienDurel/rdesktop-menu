@@ -25,10 +25,11 @@ let _indicator;
 
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
+    constructor() { super(); }
+
     _init(conf) {
-        global.log('init ' + conf);
-        super._init(conf);
 	      global.log('init ' + conf.name);
+        super._init(conf);
 
 	      this.label = new St.Label({ text: conf.name });
 	      this.actor.add(this.label, { expand: true });
@@ -113,14 +114,12 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         if (dir.query_exists(null)) this._listDir(dir);
 
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
-            
-	        let item = new RDesktopMenuItem(this.conf[srvid]);
-	        this.menu.addMenuItem(item);
+	          let item = new RDesktopMenuItem(this.conf[srvid]);
+	          this.menu.addMenuItem(item);
         }
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(new RDesktopRefreshMenuItem());
-
     }
 
     refresh() {
