@@ -75,6 +75,7 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
 
     _run() {
         try {
+            global.log('calling refresh()');
             _indicator.refresh()
         }
         catch (err) {
