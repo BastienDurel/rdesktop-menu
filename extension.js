@@ -7,6 +7,7 @@ const Shell = imports.gi.Shell;
 const St = imports.gi.St;
 const Gio = imports.gi.Gio;
 const Clutter = imports.gi.Clutter;
+const GObject = imports.gi.GObject;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -20,11 +21,13 @@ const RDSK_ICON_SIZE = 22;
 const DEFAULT_KEYBOARD = 'en-us';
 const DEFAULT_NETWORK = 'lan';
 
+let _indicator;
+
 const RDesktopMenuItem = new Lang.Class({
     Name: 'RDesktopMenu.RDesktopMenuItem',
     Extends: PopupMenu.PopupBaseMenuItem,
 
-    _init: function(conf) {
+    _construct: function(conf) {
 	      this.parent();
 	      global.log('init ' + conf.name);
 
@@ -58,7 +61,7 @@ const RDesktopRefreshMenuItem = new Lang.Class({
     Name: 'RDesktopMenu.RDesktopMenuItem',
     Extends: PopupMenu.PopupBaseMenuItem,
 
-    _init: function(conf) {
+    _construct: function(conf) {
 	      this.parent();
 	      this.label = new St.Label({ text: 'Refresh' });
 	      this.actor.add(this.label, { expand: true });
@@ -87,7 +90,7 @@ const RDesktopMenu = new Lang.Class({
     Name: 'RDesktopMenu.RDesktopMenu',
     Extends: PanelMenu.Button,
 
-    _init: function() {
+    _construct: function() {
         this.parent(0, 'server');
         this.items = [];
         let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
@@ -243,13 +246,21 @@ function init() {
     //Convenience.initTranslations();
 }
 
-let _indicator;
-
 function enable() {
+    /**
+     * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
+     */
+    if (true) {
+        RDesktopMenu = GObject.registerClass(
+            {GTypeName: 'RDesktopMenuIndicator'},
+            RDesktopMenu
+        );
+    }
     _indicator = new RDesktopMenu();
     global.log(_indicator);
     Main.panel._rdpindicator = _indicator;
     Main.panel.addToStatusArea('rdesktop-menu', _indicator);
+    global.log("RDesktopMenu enabled");
 }
 
 function disable() {
