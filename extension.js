@@ -194,32 +194,32 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                     global.log("Cannot load " + info.get_name() + ": " + e);
                     continue;
                 }
-                let name0 = kf.get_start_group();
-                let current = { "name": name0 };
+                let name = kf.get_start_group();
+                let current = { "name": name };
 
-                if (kf.has_key(name0, 'icon_name'))
-                    current.icon_name = kf.get_string(name0, 'icon_name');
-                if (kf.has_key(name0, 'run')) 
-                    current.run = kf.get_string(name0, 'run');
+                if (kf.has_key(name, 'icon_name'))
+                    current.icon_name = kf.get_string(name, 'icon_name');
+                if (kf.has_key(name, 'run'))
+                    current.run = kf.get_string(name, 'run');
                 else {
-                    let net = this._getDef(kf, name0, 'network',
+                    let net = this._getDef(kf, name, 'network',
                                            DEFAULT_NETWORK);
-                    let k = this._getSw(kf, name0, 'keyboard', 'k');
-                    let res = this._getSw(kf, name0, 'resolution', 'g');
-                    let host = this._getDef(kf, name0, 'host', name0);
-                    let t = this._getDef(kf, name0, 'title', host);
-                    let user = this._getSw(kf, name0, 'user', 'u');
-                    let pwd = this._getSw(kf, name0, 'password', 'p');
-                    let domain = this._getSw(kf, name0, 'domain', 'd');
-                    let extra = this._getExtra(kf, name0);
-                    let freerdp = this._getFreeRdp(kf, name0);
+                    let k = this._getSw(kf, name, 'keyboard', 'k');
+                    let res = this._getSw(kf, name, 'resolution', 'g');
+                    let host = this._getDef(kf, name, 'host', name);
+                    let t = this._getDef(kf, name, 'title', host);
+                    let user = this._getSw(kf, name, 'user', 'u');
+                    let pwd = this._getSw(kf, name, 'password', 'p');
+                    let domain = this._getSw(kf, name, 'domain', 'd');
+                    let extra = this._getExtra(kf, name);
+                    let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
                         current.run =
                             "xfreerdp /cert-ignore /sec:rdp +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
-                            + this._getXFRes(kf, name0)
-                            + this._getXFSw(kf, name0, 'user', 'u')
-                            + this._getXFSw(kf, name0, 'password', 'p') 
-                            + this._getXFSw(kf, name0, 'domain', 'd') + " '/t:"
+                            + this._getXFRes(kf, name)
+                            + this._getXFSw(kf, name, 'user', 'u')
+                            + this._getXFSw(kf, name, 'password', 'p')
+                            + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
                             + t + "' /v:" + host;
                     }
                     else {
