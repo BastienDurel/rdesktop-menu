@@ -1,8 +1,8 @@
 {
-    "extension-id": "rdesktop-menu",
-    "uuid": "rdesktop-menu@bastien.git.geekwu.org",
-    "name": "Rdesktop launcher",
-    "description": "Add a servers status menu for quickly running rdesktop",
-    "shell-version": [ "3.32" ],
-    "url": "https://git.geekwu.org/bastien/rdesktop-menu"
+  "extension-id": "rdesktop-menu",
+  "uuid": "rdesktop-menu@bastien.git.geekwu.org",
+  "name": "Rdesktop launcher",
+  "description": "Add a servers status menu for quickly running rdesktop",
+  "shell-version": [ "3.28", "3.30", "3.32" ],
+  "url": "https://git.geekwu.org/bastien/rdesktop-menu"
 }

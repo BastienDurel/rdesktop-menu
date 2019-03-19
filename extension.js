@@ -25,25 +25,23 @@ let _indicator;
 
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    constructor() { super(); }
+    constructor(conf) {
+        super();
+        global.log('init ' + conf.name);
 
-    _init(conf) {
-	      global.log('init ' + conf.name);
-        super._init(conf);
-
-	      this.label = new St.Label({ text: conf.name });
-	      this.actor.add(this.label, { expand: true });
+        this.label = new St.Label({ text: conf.name });
+        this.actor.add(this.label, { expand: true });
         this.actor.label_actor = this.label;
 
-	      this.conf = conf;
+        this.conf = conf;
 
         let icon_name = conf.icon_name || 'computer-symbolic';
-	      let icon = new St.Icon({ icon_name: icon_name, 
-	                               icon_size: RDSK_ICON_SIZE });
-	      let button = new St.Button({ child: icon });
-	      button.connect('clicked', Lang.bind(this, this._run));
-	      this.actor.connect('button-press-event', Lang.bind(this, this._run));
-	      this.actor.add(button);
+        let icon = new St.Icon({ icon_name: icon_name,
+                                 icon_size: RDSK_ICON_SIZE });
+        let button = new St.Button({ child: icon });
+        button.connect('clicked', Lang.bind(this, this._run));
+        this.actor.connect('button-press-event', Lang.bind(this, this._run));
+        this.actor.add(button);
     }
 
     _run() {
@@ -59,18 +57,18 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
 
 var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    _init(conf) {
-        super._init(conf);
-	      this.label = new St.Label({ text: 'Refresh' });
-	      this.actor.add(this.label, { expand: true });
+    constructor(conf) {
+        super();
+        this.label = new St.Label({ text: 'Refresh' });
+        this.actor.add(this.label, { expand: true });
         this.actor.label_actor = this.label;
 
-	      let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
-	                               icon_size: RDSK_ICON_SIZE });
-	      let button = new St.Button({ child: icon });
-	      button.connect('clicked', Lang.bind(this, this._run));
-	      this.actor.connect('button-press-event', Lang.bind(this, this._run));
-	      this.actor.add(button);
+        let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
+                                 icon_size: RDSK_ICON_SIZE });
+        let button = new St.Button({ child: icon });
+        button.connect('clicked', Lang.bind(this, this._run));
+        this.actor.connect('button-press-event', Lang.bind(this, this._run));
+        this.actor.add(button);
     }
 
     _run() {
@@ -115,8 +113,8 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         if (dir.query_exists(null)) this._listDir(dir);
 
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
-	          let item = new RDesktopMenuItem(this.conf[srvid]);
-	          this.menu.addMenuItem(item);
+            let item = new RDesktopMenuItem(this.conf[srvid]);
+            this.menu.addMenuItem(item);
         }
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -170,22 +168,22 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         let enumerator = file.enumerate_children(
             Gio.FILE_ATTRIBUTE_STANDARD_NAME, Gio.FileQueryInfoFlags.NONE,
             null);
-	      if (enumerator == null) throw error;
-	      let info;
+        if (enumerator == null) throw error;
+        let info;
         let re = /.*\.conf$/;
-	      while ((info = enumerator.next_file(null)) != null) {
-		        if (re.test(info.get_name())) {
+        while ((info = enumerator.next_file(null)) != null) {
+            if (re.test(info.get_name())) {
                 let kf = new GLib.KeyFile;
                 // Monkey patching: gir file describes has_key,
                 // but it's not present
-		            if (kf.has_key == undefined) kf.has_key = function(group, key) {
+                if (kf.has_key == undefined) kf.has_key = function(group, key) {
                     try {
-			                  let keys = kf.get_keys(group);
-			                  return keys[0].indexOf(key) != -1;
+                        let keys = kf.get_keys(group);
+                        return keys[0].indexOf(key) != -1;
                     } catch (e) { return false; }
-		            }
+                }
                 try {
-		                kf.load_from_file(file.get_path() + "/" + info.get_name(), 
+                    kf.load_from_file(file.get_path() + "/" + info.get_name(),
                                       GLib.KeyFileFlags.NONE);
                 } catch (e) {
                     global.log("Cannot load " + info.get_name() + ": " + e);
@@ -232,7 +230,7 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                 if (kf.free != undefined) kf.free();
             }
         }
-	}
+  }
 
 };
 
