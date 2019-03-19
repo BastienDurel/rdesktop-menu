@@ -8,3 +8,10 @@ deploy:
     - git push github
   tags:
     - docker
+
+build:
+  script: zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json README example.conf
+  artifacts:
+    paths:
+      - rdesktop-menu@bastien.git.geekwu.org.zip
+    expire_in: 1 year
