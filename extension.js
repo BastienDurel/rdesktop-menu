@@ -15,6 +15,7 @@ const PopupMenu = imports.ui.popupMenu;
 const Panel = imports.ui.panel;
 
 const ExtensionUtils = imports.misc.extensionUtils;
+const Config = imports.misc.config;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const RDSK_ICON_SIZE = 22;
@@ -22,6 +23,10 @@ const DEFAULT_KEYBOARD = 'en-us';
 const DEFAULT_NETWORK = 'lan';
 
 let _indicator;
+window.rdesktopmenu = {
+    extdatadir: ExtensionUtils.getCurrentExtension().path,
+    shell_version: parseInt(Config.PACKAGE_VERSION.split('.')[1], 10)
+};
 
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
@@ -254,7 +259,8 @@ function disable() {
 /**
  * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
  */
-if (true) {
+if (rdesktopmenu.shell_version >= 32) {
+    global.log("Re-wrap RDesktopMenu");
     RDesktopMenu = GObject.registerClass(
         {GTypeName: 'RDesktopMenuIndicator'},
         RDesktopMenu
