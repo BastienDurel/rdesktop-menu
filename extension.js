@@ -51,7 +51,7 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
 
     _run() {
         try {
-            global.log("Try to run: '" + this.conf.run + "'");
+            global.log("Try to run: '" + this.conf.run_safe + "'");
             GLib.spawn_command_line_async(this.conf.run);
         }
         catch (err) {
@@ -221,12 +221,14 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                             + this._getXFSw(kf, name, 'password', 'p')
                             + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
                             + t + "' /v:" + host;
+                        current.run_safe = current.run.replace(/\/p:[^ ']+/, '/p:*****');
                     }
                     else {
                         current.run =
                             "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp "
                             + user + pwd + domain + k + res + " -T '" + t
                             + "' -x " + net + ' ' + extra + ' ' + host;
+                        current.run_safe = current.run.replace(/-p '?[^ ']+'?/, '-p *****');
                     }
                 }
 
