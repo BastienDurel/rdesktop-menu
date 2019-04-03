@@ -6,3 +6,4 @@ It uses ini files located into ~/.config/grdesktop/
 
 This software is released under the GNU Public License.
 
+[![pipeline status](https://git.geekwu.org/bastien/rdesktop-menu/badges/master/pipeline.svg)](https://git.geekwu.org/bastien/rdesktop-menu/commits/master)
