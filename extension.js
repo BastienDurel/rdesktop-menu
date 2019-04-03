@@ -136,8 +136,13 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
     }
 
     _getSw(kf, group, key, sw) {
-        return kf.has_key(group, key) ? ' -' + sw + ' ' +
-            kf.get_string(group, key) : '';
+        return kf.has_key(group, key) ? ' -' + sw + ' "' +
+            kf.get_string(group, key) + '"' : '';
+    }
+
+    _getBoolSw(kf, group, key, sw, def) {
+        var val = kf.has_key(group, key) ? !!kf.get_int(group, key) : def;
+        return val ? ' -' + sw : '';
     }
 
     _getXFSw(kf, group, key, sw) {
@@ -224,11 +229,13 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                         current.run_safe = current.run.replace(/\/p:[^ ']+/, '/p:*****');
                     }
                     else {
+                        let encryption = this._getBoolSw(kf, name, 'disable_encryption', 'E', true);
                         current.run =
-                            "rdesktop -E -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp "
-                            + user + pwd + domain + k + res + " -T '" + t
-                            + "' -x " + net + ' ' + extra + ' ' + host;
-                        current.run_safe = current.run.replace(/-p '?[^ ']+'?/, '-p *****');
+                            "rdesktop -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp"
+                            + encryption + user + pwd + domain + k + res
+                            + ' -T "' + t + '" -x ' + net + ' ' + extra + ' '
+                            + host;
+                        current.run_safe = current.run.replace(/-p "?[^ "]+"?/, '-p *****');
                     }
                 }
 
