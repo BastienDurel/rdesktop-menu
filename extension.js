@@ -45,8 +45,8 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         global.log('init ' + conf.name);
 
         this.label = new St.Label({ text: conf.name });
-        this.actor.add(this.label, { expand: true });
-        this.actor.label_actor = this.label;
+        this.add(this.label, { expand: true });
+        this.label_actor = this.label;
 
         this.conf = conf;
 
@@ -55,8 +55,8 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
         button.connect('clicked', () => { this._run(); });
-        this.actor.connect('button-press-event', () => { this._run(); });
-        this.actor.add(button);
+        this.connect('button-press-event', () => { this._run(); });
+        this.add(button);
     }
 };
 
@@ -75,15 +75,15 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
     _init(conf) {
         super._init();
         this.label = new St.Label({ text: 'Refresh' });
-        this.actor.add(this.label, { expand: true });
-        this.actor.label_actor = this.label;
+        this.add(this.label, { expand: true });
+        this.label_actor = this.label;
 
         let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
         button.connect('clicked', () => { this._run(); });
-        this.actor.connect('button-press-event', () => { this._run(); });
-        this.actor.add(button);
+        this.connect('button-press-event', () => { this._run(); });
+        this.add(button);
     }
 };
 
@@ -100,10 +100,10 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         hbox.add_child(new St.Label({ text: '\u25BE',
                                       y_expand: true,
                                       y_align: Clutter.ActorAlign.CENTER }));
-        this.actor.add_child(hbox);
+        this.add_child(hbox);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._createItems();
-        this.actor.show();
+        this.show();
     }
 
     destroy() {
@@ -114,20 +114,14 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         global.log('starting _createItems()');
         let dir = Gio.file_new_for_path(GLib.get_user_config_dir ()
                                         + "/grdesktop");
-        global.log('dir is: ' + dir);
         this.conf = [];
         if (dir.query_exists(null)) this._listDir(dir);
 
-        global.log('conf is: ' + this.conf);
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
-            global.log('creating item for #' + srvid);
-            global.log('creating item for -> ' + this.conf[srvid]);
             let item = new RDesktopMenuItem(this.conf[srvid]);
-            global.log('add item...');
             this.menu.addMenuItem(item);
         }
 
-        global.log('add final items');
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(new RDesktopRefreshMenuItem());
     }
@@ -192,12 +186,13 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                 let kf = new GLib.KeyFile;
                 // Monkey patching: gir file describes has_key,
                 // but it's not present
-                if (kf.has_key == undefined) kf.has_key = function(group, key) {
-                    try {
-                        let keys = kf.get_keys(group);
-                        return keys[0].indexOf(key) != -1;
-                    } catch (e) { return false; }
-                }
+                if (kf.has_key == undefined)
+                    kf.has_key = function(group, key) {
+                        try {
+                            let keys = kf.get_keys(group);
+                            return keys[0].indexOf(key) != -1;
+                        } catch (e) { return false; }
+                    };
                 try {
                     kf.load_from_file(file.get_path() + "/" + info.get_name(),
                                       GLib.KeyFileFlags.NONE);
