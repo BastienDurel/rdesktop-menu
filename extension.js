@@ -40,8 +40,8 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         }
     }
 
-    constructor(conf) {
-        super();
+    _init(conf) {
+        super._init();
         global.log('init ' + conf.name);
 
         this.label = new St.Label({ text: conf.name });
@@ -72,8 +72,8 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
         }
     }
 
-    constructor(conf) {
-        super();
+    _init(conf) {
+        super._init();
         this.label = new St.Label({ text: 'Refresh' });
         this.actor.add(this.label, { expand: true });
         this.actor.label_actor = this.label;
