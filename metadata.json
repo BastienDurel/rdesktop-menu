@@ -4,10 +4,8 @@
   "name": "Rdesktop launcher",
   "description": "Add a servers status menu for quickly running rdesktop",
   "shell-version": [
-    "3.28",
-    "3.30",
-    "3.32"
+    "3.34"
   ],
   "url": "https://git.geekwu.org/bastien/rdesktop-menu",
-  "version": 6
+  "version": 7
 }
