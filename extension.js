@@ -30,6 +30,16 @@ window.rdesktopmenu = {
 
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
+    _run() {
+        try {
+            global.log("Try to run: '" + this.conf.run_safe + "'");
+            GLib.spawn_command_line_async(this.conf.run);
+        }
+        catch (err) {
+            Main.notifyError('Error', err.message);
+        }
+    }
+
     constructor(conf) {
         super();
         global.log('init ' + conf.name);
@@ -44,23 +54,23 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         let icon = new St.Icon({ icon_name: icon_name,
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
-        button.connect('clicked', Lang.bind(this, this._run));
-        this.actor.connect('button-press-event', Lang.bind(this, this._run));
+        button.connect('clicked', () => { this._run(); });
+        this.actor.connect('button-press-event', () => { this._run(); });
         this.actor.add(button);
     }
+};
+
+var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
     _run() {
         try {
-            global.log("Try to run: '" + this.conf.run_safe + "'");
-            GLib.spawn_command_line_async(this.conf.run);
+            global.log('calling refresh()');
+            _indicator.refresh();
         }
         catch (err) {
             Main.notifyError('Error', err.message);
         }
     }
-};
-
-var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
     constructor(conf) {
         super();
@@ -71,19 +81,9 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
         let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
-        button.connect('clicked', Lang.bind(this, this._run));
-        this.actor.connect('button-press-event', Lang.bind(this, this._run));
+        button.connect('clicked', () => { this._run(); });
+        this.actor.connect('button-press-event', () => { this._run(); });
         this.actor.add(button);
-    }
-
-    _run() {
-        try {
-            global.log('calling refresh()');
-            _indicator.refresh()
-        }
-        catch (err) {
-            Main.notifyError('Error', err.message);
-        }
     }
 };
 
@@ -114,14 +114,20 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         global.log('starting _createItems()');
         let dir = Gio.file_new_for_path(GLib.get_user_config_dir ()
                                         + "/grdesktop");
+        global.log('dir is: ' + dir);
         this.conf = [];
         if (dir.query_exists(null)) this._listDir(dir);
 
+        global.log('conf is: ' + this.conf);
         for (let srvid = 0; srvid < this.conf.length; srvid++) {
+            global.log('creating item for #' + srvid);
+            global.log('creating item for -> ' + this.conf[srvid]);
             let item = new RDesktopMenuItem(this.conf[srvid]);
+            global.log('add item...');
             this.menu.addMenuItem(item);
         }
 
+        global.log('add final items');
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(new RDesktopRefreshMenuItem());
     }
@@ -274,4 +280,14 @@ if (rdesktopmenu.shell_version >= 32) {
         {GTypeName: 'RDesktopMenuIndicator'},
         RDesktopMenu
     );
+    if (rdesktopmenu.shell_version >= 34) {
+        RDesktopMenuItem = GObject.registerClass(
+            {GTypeName: 'RDesktopMenuItemIndicator'},
+            RDesktopMenuItem
+        );
+        RDesktopRefreshMenuItem = GObject.registerClass(
+            {GTypeName: 'RDesktopRefreshMenuItemIndicator'},
+            RDesktopRefreshMenuItem
+        );
+    }
 }
