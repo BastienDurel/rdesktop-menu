@@ -30,13 +30,13 @@ window.rdesktopmenu = {
 
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    constructor(conf) {
-        super();
+    _init(conf) {
+        super._init();
         global.log('init ' + conf.name);
 
         this.label = new St.Label({ text: conf.name });
-        this.actor.add(this.label, { expand: true });
-        this.actor.label_actor = this.label;
+        this.add(this.label, { expand: true });
+        this.label_actor = this.label;
 
         this.conf = conf;
 
@@ -44,9 +44,9 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         let icon = new St.Icon({ icon_name: icon_name,
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
-        button.connect('clicked', Lang.bind(this, this._run));
-        this.actor.connect('button-press-event', Lang.bind(this, this._run));
-        this.actor.add(button);
+        button.connect('clicked', () => { this._run(); });
+        this.connect('button-press-event', () => { this._run(); });
+        this.add(button);
     }
 
     _run() {
@@ -62,24 +62,24 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
 
 var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    constructor(conf) {
-        super();
+    _init(conf) {
+        super._init();
         this.label = new St.Label({ text: 'Refresh' });
-        this.actor.add(this.label, { expand: true });
-        this.actor.label_actor = this.label;
+        this.add(this.label, { expand: true });
+        this.label_actor = this.label;
 
         let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
-        button.connect('clicked', Lang.bind(this, this._run));
-        this.actor.connect('button-press-event', Lang.bind(this, this._run));
-        this.actor.add(button);
+        button.connect('clicked', () => { this._run(); });
+        this.connect('button-press-event', () => { this._run(); });
+        this.add(button);
     }
 
     _run() {
         try {
             global.log('calling refresh()');
-            _indicator.refresh()
+            _indicator.refresh();
         }
         catch (err) {
             Main.notifyError('Error', err.message);
@@ -100,10 +100,10 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         hbox.add_child(new St.Label({ text: '\u25BE',
                                       y_expand: true,
                                       y_align: Clutter.ActorAlign.CENTER }));
-        this.actor.add_child(hbox);
+        this.add_child(hbox);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._createItems();
-        this.actor.show();
+        this.show();
     }
 
     destroy() {
@@ -186,12 +186,13 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                 let kf = new GLib.KeyFile;
                 // Monkey patching: gir file describes has_key,
                 // but it's not present
-                if (kf.has_key == undefined) kf.has_key = function(group, key) {
-                    try {
-                        let keys = kf.get_keys(group);
-                        return keys[0].indexOf(key) != -1;
-                    } catch (e) { return false; }
-                }
+                if (kf.has_key == undefined)
+                    kf.has_key = function(group, key) {
+                        try {
+                            let keys = kf.get_keys(group);
+                            return keys[0].indexOf(key) != -1;
+                        } catch (e) { return false; }
+                    };
                 try {
                     kf.load_from_file(file.get_path() + "/" + info.get_name(),
                                       GLib.KeyFileFlags.NONE);
@@ -268,10 +269,19 @@ function disable() {
 /**
  * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
  */
-if (rdesktopmenu.shell_version >= 32) {
-    global.log("Re-wrap RDesktopMenu");
-    RDesktopMenu = GObject.registerClass(
-        {GTypeName: 'RDesktopMenuIndicator'},
-        RDesktopMenu
-    );
-}
+global.log("Re-wrap classes");
+RDesktopMenu = GObject.registerClass(
+    {GTypeName: 'RDesktopMenuIndicator'},
+    RDesktopMenu
+);
+/**
+ * Re-wrap the MenuItem classes as a GObject subclasses for GNOME Shell 3.34
+ */
+RDesktopMenuItem = GObject.registerClass(
+    {GTypeName: 'RDesktopMenuItemIndicator'},
+    RDesktopMenuItem
+);
+RDesktopRefreshMenuItem = GObject.registerClass(
+    {GTypeName: 'RDesktopRefreshMenuItemIndicator'},
+    RDesktopRefreshMenuItem
+);
