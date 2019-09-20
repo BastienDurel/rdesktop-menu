@@ -30,16 +30,6 @@ window.rdesktopmenu = {
 
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
-    _run() {
-        try {
-            global.log("Try to run: '" + this.conf.run_safe + "'");
-            GLib.spawn_command_line_async(this.conf.run);
-        }
-        catch (err) {
-            Main.notifyError('Error', err.message);
-        }
-    }
-
     _init(conf) {
         super._init();
         global.log('init ' + conf.name);
@@ -58,19 +48,19 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         this.connect('button-press-event', () => { this._run(); });
         this.add(button);
     }
-};
-
-var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
     _run() {
         try {
-            global.log('calling refresh()');
-            _indicator.refresh();
+            global.log("Try to run: '" + this.conf.run_safe + "'");
+            GLib.spawn_command_line_async(this.conf.run);
         }
         catch (err) {
             Main.notifyError('Error', err.message);
         }
     }
+};
+
+var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
 
     _init(conf) {
         super._init();
@@ -84,6 +74,16 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
         button.connect('clicked', () => { this._run(); });
         this.connect('button-press-event', () => { this._run(); });
         this.add(button);
+    }
+
+    _run() {
+        try {
+            global.log('calling refresh()');
+            _indicator.refresh();
+        }
+        catch (err) {
+            Main.notifyError('Error', err.message);
+        }
     }
 };
 
