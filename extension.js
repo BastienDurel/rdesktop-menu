@@ -269,20 +269,19 @@ function disable() {
 /**
  * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
  */
-if (rdesktopmenu.shell_version >= 32) {
-    global.log("Re-wrap RDesktopMenu");
-    RDesktopMenu = GObject.registerClass(
-        {GTypeName: 'RDesktopMenuIndicator'},
-        RDesktopMenu
-    );
-    if (rdesktopmenu.shell_version >= 34) {
-        RDesktopMenuItem = GObject.registerClass(
-            {GTypeName: 'RDesktopMenuItemIndicator'},
-            RDesktopMenuItem
-        );
-        RDesktopRefreshMenuItem = GObject.registerClass(
-            {GTypeName: 'RDesktopRefreshMenuItemIndicator'},
-            RDesktopRefreshMenuItem
-        );
-    }
-}
+global.log("Re-wrap classes");
+RDesktopMenu = GObject.registerClass(
+    {GTypeName: 'RDesktopMenuIndicator'},
+    RDesktopMenu
+);
+/**
+ * Re-wrap the MenuItem classes as a GObject subclasses for GNOME Shell 3.34
+ */
+RDesktopMenuItem = GObject.registerClass(
+    {GTypeName: 'RDesktopMenuItemIndicator'},
+    RDesktopMenuItem
+);
+RDesktopRefreshMenuItem = GObject.registerClass(
+    {GTypeName: 'RDesktopRefreshMenuItemIndicator'},
+    RDesktopRefreshMenuItem
+);
