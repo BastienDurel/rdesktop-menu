@@ -149,7 +149,12 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         return kf.has_key(group, key) ? ' /' + sw + ':' +
             kf.get_string(group, key) : '';
     }
-    
+
+    _getXFSwDef(kf, group, key, sw, def) {
+        return kf.has_key(group, key) ? ' /' + sw + ':' +
+            kf.get_string(group, key) : ' /' + sw + ':' + def;
+    }
+
     _getFreeRdp(kf, group) {
         var key = 'freerdp';
         return kf.has_key(group, key) && kf.get_string(group, key) == '1';
@@ -221,7 +226,8 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                     let freerdp = this._getFreeRdp(kf, name);
                     if (freerdp) {
                         current.run =
-                            "xfreerdp /cert-ignore /sec:rdp +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                            "xfreerdp /cert-ignore +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                            + this._getXFSwDef(kf, name, 'sec', 'sec')
                             + this._getXFRes(kf, name)
                             + this._getXFSw(kf, name, 'user', 'u')
                             + this._getXFSw(kf, name, 'password', 'p')
