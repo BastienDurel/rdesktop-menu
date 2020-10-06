@@ -35,7 +35,7 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         global.log('init ' + conf.name);
 
         this.label = new St.Label({ text: conf.name });
-        this.add(this.label, { expand: true });
+        this.add_child(this.label, { expand: true });
         this.label_actor = this.label;
 
         this.conf = conf;
@@ -46,7 +46,7 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         let button = new St.Button({ child: icon });
         button.connect('clicked', () => { this._run(); });
         this.connect('button-press-event', () => { this._run(); });
-        this.add(button);
+        this.add_child(button);
     }
 
     _run() {
@@ -65,7 +65,7 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
     _init(conf) {
         super._init();
         this.label = new St.Label({ text: 'Refresh' });
-        this.add(this.label, { expand: true });
+        this.add_child(this.label, { expand: true });
         this.label_actor = this.label;
 
         let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
@@ -73,7 +73,7 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
         let button = new St.Button({ child: icon });
         button.connect('clicked', () => { this._run(); });
         this.connect('button-press-event', () => { this._run(); });
-        this.add(button);
+        this.add_child(button);
     }
 
     _run() {
