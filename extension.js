@@ -34,8 +34,8 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         super._init();
         global.log('init ' + conf.name);
 
-        this.label = new St.Label({ text: conf.name });
-        this.add_child(this.label, { expand: true });
+        this.label = new St.Label({ text: conf.name, x_expand: true });
+        this.add_child(this.label);
         this.label_actor = this.label;
 
         this.conf = conf;
@@ -64,8 +64,8 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
 
     _init(conf) {
         super._init();
-        this.label = new St.Label({ text: 'Refresh' });
-        this.add_child(this.label, { expand: true });
+        this.label = new St.Label({ text: 'Refresh', x_expand: true });
+        this.add_child(this.label);
         this.label_actor = this.label;
 
         let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
