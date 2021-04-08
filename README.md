@@ -1,4 +1,4 @@
-rdesktop-menu extension for GNOME SHELL (c) 2012-2020 Bastien Durel
+rdesktop-menu extension for GNOME SHELL (c) 2012-2021 Bastien Durel
 
 Add a servers status menu for quickly running rdesktop.
 
