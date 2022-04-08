@@ -30,7 +30,7 @@ window.rdesktopmenu = {
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
     _init(conf) {
-        super._init();
+        super._init({ style_class: 'rdesktop-menu-item' });
         global.log('init ' + conf.name);
 
         this.label = new St.Label({ text: conf.name, x_expand: true });
