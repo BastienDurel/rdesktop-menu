@@ -10,7 +10,7 @@ deploy:
     - docker
 
 build:
-  script: zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json README.md example.conf
+  script: zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json stylesheet.css README.md example.conf
   artifacts:
     paths:
       - rdesktop-menu@bastien.git.geekwu.org.zip
