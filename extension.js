@@ -226,7 +226,7 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                     if (freerdp) {
                         current.run =
                             "xfreerdp /cert-ignore +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
-                            + this._getXFSwDef(kf, name, 'sec', 'sec')
+                            + this._getXFSw(kf, name, 'sec', 'sec')
                             + this._getXFRes(kf, name)
                             + this._getXFSw(kf, name, 'user', 'u')
                             + this._getXFSw(kf, name, 'password', 'p')
