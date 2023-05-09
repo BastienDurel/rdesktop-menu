@@ -1,7 +1,7 @@
 SRC = *.js metadata.json stylesheet.css
 DOC = README.md example.conf
 
-GS = gnome-shell/extensions/
+GS = gnome-shell/extensions/rdesktop-menu@bastien.git.geekwu.org/
 DEST := $(shell echo $${XDG_DATA_HOME:-$$HOME/.local/share}/$(GS))
 
 install: $(SRC)
