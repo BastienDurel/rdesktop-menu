@@ -1,15 +1,18 @@
 image: localhost:5000/deploy
 
 deploy:
+  stage: deploy
   script:
-    - git remote add github git@github.com:BastienDurel/rdesktop-menu.git || true
+    - git remote | grep -q github || git remote add github git@github.com:BastienDurel/rdesktop-menu.git
     - git pull origin master
     - git fetch origin
-    - git push github
+    - git fetch github
+    - git push github --all
   tags:
     - docker
 
 build:
+  stage: build
   script: zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json stylesheet.css README.md example.conf
   artifacts:
     paths:
