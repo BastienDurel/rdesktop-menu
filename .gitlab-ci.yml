@@ -3,8 +3,8 @@ image: localhost:5000/deploy
 deploy:
   stage: deploy
   script:
-    - git for-each-ref --format 'delete %(refname)' refs/pull | git update-ref --stdin
-    - git for-each-ref --format 'delete %(refname)' refs/pipelines | git update-ref --stdin
+    - git clone https://git.geekwu.org/bastien/rdesktop-menu.git
+    - cd rdesktop-menu/
     - git push --mirror git@github.com:BastienDurel/rdesktop-menu.git
   tags:
     - docker
