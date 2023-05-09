@@ -19,5 +19,5 @@ $ $EDITOR ~/.config/grdesktop/myhost.conf
 ...then refresh config from the extension GUI.
 
 You can have any number of connection files in config directory, but make sure
-they have a different name (`"[example-connection]"` is the name in
+they have a different name ("`[example-connection]`" is the name in
 template), or they would merge in menu
