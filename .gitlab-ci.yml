@@ -3,11 +3,7 @@ image: localhost:5000/deploy
 deploy:
   stage: deploy
   script:
-    - git remote | grep -q github || git remote add github git@github.com:BastienDurel/rdesktop-menu.git
-    - git pull origin master
-    - git fetch origin
-    - git fetch github
-    - git push github --all
+    - git push --mirror git@github.com:BastienDurel/rdesktop-menu.git
   tags:
     - docker
 
