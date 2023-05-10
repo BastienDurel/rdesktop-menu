@@ -21,3 +21,5 @@ $ $EDITOR ~/.config/grdesktop/myhost.conf
 You can have any number of connection files in config directory, but make sure
 they have a different name ("`[example-connection]`" is the name in
 template), or they would merge in menu
+
+Each file may have multiple connections, in multiple sections

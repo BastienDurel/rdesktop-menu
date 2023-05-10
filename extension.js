@@ -177,6 +177,50 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
         return ' /w:1275 /h:962';
     }
 
+    _loadGroup(kf, name) {
+        let current = { "name": name };
+
+        if (kf.has_key(name, 'icon_name'))
+            current.icon_name = kf.get_string(name, 'icon_name');
+        if (kf.has_key(name, 'run'))
+            current.run = kf.get_string(name, 'run');
+        else {
+            let net = this._getDef(kf, name, 'network',
+                                   DEFAULT_NETWORK);
+            let k = this._getSw(kf, name, 'keyboard', 'k');
+            let res = this._getSw(kf, name, 'resolution', 'g');
+            let host = this._getDef(kf, name, 'host', name);
+            let t = this._getDef(kf, name, 'title', host);
+            let user = this._getSw(kf, name, 'user', 'u');
+            let pwd = this._getSw(kf, name, 'password', 'p');
+            let domain = this._getSw(kf, name, 'domain', 'd');
+            let extra = this._getExtra(kf, name);
+            let freerdp = this._getFreeRdp(kf, name);
+            if (freerdp) {
+                current.run =
+                    "xfreerdp /cert-ignore +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
+                    + this._getXFSw(kf, name, 'sec', 'sec')
+                    + this._getXFRes(kf, name)
+                    + this._getXFSw(kf, name, 'user', 'u')
+                    + this._getXFSw(kf, name, 'password', 'p')
+                    + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
+                    + t + "' /v:" + host;
+                current.run_safe = current.run.replace(/\/p:[^ ']+/, '/p:*****');
+            }
+            else {
+                let encryption = this._getBoolSw(kf, name, 'disable_encryption', 'E', true);
+                current.run =
+                    "rdesktop -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp"
+                    + encryption + user + pwd + domain + k + res
+                    + ' -T "' + t + '" -x ' + net + ' ' + extra + ' '
+                    + host;
+                current.run_safe = current.run.replace(/-p "?[^ "]+"?/, '-p *****');
+            }
+        }
+
+        this.conf.push(current);
+    }
+
     _listDir(file) {
         this.conf = [];
         let enumerator = file.enumerate_children(
@@ -204,48 +248,9 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                     global.log("Cannot load " + info.get_name() + ": " + e);
                     continue;
                 }
-                let name = kf.get_start_group();
-                let current = { "name": name };
+                const groups = kf.get_groups(); // returns [[n1,nn], len]
+                groups[0].forEach(name => this._loadGroup(kf, name));
 
-                if (kf.has_key(name, 'icon_name'))
-                    current.icon_name = kf.get_string(name, 'icon_name');
-                if (kf.has_key(name, 'run'))
-                    current.run = kf.get_string(name, 'run');
-                else {
-                    let net = this._getDef(kf, name, 'network',
-                                           DEFAULT_NETWORK);
-                    let k = this._getSw(kf, name, 'keyboard', 'k');
-                    let res = this._getSw(kf, name, 'resolution', 'g');
-                    let host = this._getDef(kf, name, 'host', name);
-                    let t = this._getDef(kf, name, 'title', host);
-                    let user = this._getSw(kf, name, 'user', 'u');
-                    let pwd = this._getSw(kf, name, 'password', 'p');
-                    let domain = this._getSw(kf, name, 'domain', 'd');
-                    let extra = this._getExtra(kf, name);
-                    let freerdp = this._getFreeRdp(kf, name);
-                    if (freerdp) {
-                        current.run =
-                            "xfreerdp /cert-ignore +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp "
-                            + this._getXFSw(kf, name, 'sec', 'sec')
-                            + this._getXFRes(kf, name)
-                            + this._getXFSw(kf, name, 'user', 'u')
-                            + this._getXFSw(kf, name, 'password', 'p')
-                            + this._getXFSw(kf, name, 'domain', 'd') + " '/t:"
-                            + t + "' /v:" + host;
-                        current.run_safe = current.run.replace(/\/p:[^ ']+/, '/p:*****');
-                    }
-                    else {
-                        let encryption = this._getBoolSw(kf, name, 'disable_encryption', 'E', true);
-                        current.run =
-                            "rdesktop -r clipboard:PRIMARYCLIPBOARD -0 -5 -r disk:tmp=/tmp"
-                            + encryption + user + pwd + domain + k + res
-                            + ' -T "' + t + '" -x ' + net + ' ' + extra + ' '
-                            + host;
-                        current.run_safe = current.run.replace(/-p "?[^ "]+"?/, '-p *****');
-                    }
-                }
-
-                this.conf.push(current);
                 // Same gir vs object problem
                 if (kf.free != undefined) kf.free();
             }
