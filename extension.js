@@ -82,45 +82,6 @@ const RDesktopMenuItem = GObject.registerClass(
     }
 );
 
-const RDesktopRefreshMenuItem = GObject.registerClass(
-	  {
-		    _TimeoutId: null,
-		    _FirstTimeoutId: null,
-		    _updateProcess_sourceId: null,
-		    _updateProcess_stream: null,
-		    _updateProcess_pid: null,
-		    _updateList: [],
-	  },
-    class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
-	      constructor(menu) {
-            super();
-            this._parent = menu;
-	      }
-        _init(conf) {
-            super._init();
-            this.label = new St.Label({ text: 'Refresh', x_expand: true });
-            this.add_child(this.label);
-            this.label_actor = this.label;
-
-            let icon = new St.Icon({ icon_name: 'view-refresh-symbolic',
-                                     icon_size: RDSK_ICON_SIZE });
-            let button = new St.Button({ child: icon });
-            button.connect('clicked', () => { this._run(); });
-            this.connect('activate', () => { this._run(); });
-            this.add_child(button);
-        }
-        _run() {
-            try {
-                console.log('calling refresh()');
-                this._parent.refresh();
-            }
-            catch (err) {
-                Main.notifyError('Error', err.message);
-            }
-        }
-    }
-);
-
 const RDesktopMenu = GObject.registerClass(
 	  {
 		    _TimeoutId: null,
@@ -150,6 +111,12 @@ const RDesktopMenu = GObject.registerClass(
             super.destroy();
         }
         _createItems() {
+            this.refreshButton = new PopupMenu.PopupMenuItem(_('Refresh'));
+            this.refreshButton.connect('activate', this.refresh.bind(this));
+            //let icon = new St.Icon({ icon_name: 'view-refresh-symbolic', icon_size: RDSK_ICON_SIZE });
+            //this.refreshButton
+            //this.menu.addMenuItem(this.refreshButton);
+            //this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             console.log('starting _createItems()');
             let dir = Gio.file_new_for_path(GLib.get_user_config_dir ()
                                             + "/grdesktop");
@@ -162,7 +129,7 @@ const RDesktopMenu = GObject.registerClass(
             }
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this.menu.addMenuItem(new RDesktopRefreshMenuItem(this));
+            this.menu.addMenuItem(this.refreshButton);
         }
         refresh() {
             this.menu.removeAll();
