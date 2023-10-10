@@ -67,7 +67,7 @@ const RDesktopMenuItem = GObject.registerClass(
                                      icon_size: RDSK_ICON_SIZE });
             let button = new St.Button({ child: icon });
             button.connect('clicked', this._run.bind(this));
-            this.connect('button-press-event', this._run.bind(this));
+            this.connect('activate', this._run.bind(this));
             this.add_child(button);
         }
         _run() {
@@ -102,7 +102,7 @@ const RDesktopRefreshMenuItem = GObject.registerClass(
                                      icon_size: RDSK_ICON_SIZE });
             let button = new St.Button({ child: icon });
             button.connect('clicked', () => { this._run(); });
-            this.connect('button-press-event', () => { this._run(); });
+            this.connect('activate', () => { this._run(); });
             this.add_child(button);
         }
         _run() {
