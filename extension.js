@@ -92,6 +92,10 @@ const RDesktopRefreshMenuItem = GObject.registerClass(
 		    _updateList: [],
 	  },
     class RDesktopRefreshMenuItem extends PopupMenu.PopupBaseMenuItem {
+	      constructor(menu) {
+            super();
+            this._parent = menu;
+	      }
         _init(conf) {
             super._init();
             this.label = new St.Label({ text: 'Refresh', x_expand: true });
@@ -107,8 +111,8 @@ const RDesktopRefreshMenuItem = GObject.registerClass(
         }
         _run() {
             try {
-                console.log('calling refresh()', Me);
-                Me._indicator.refresh();
+                console.log('calling refresh()');
+                this._parent.refresh();
             }
             catch (err) {
                 Main.notifyError('Error', err.message);
@@ -158,7 +162,7 @@ const RDesktopMenu = GObject.registerClass(
             }
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this.menu.addMenuItem(new RDesktopRefreshMenuItem());
+            this.menu.addMenuItem(new RDesktopRefreshMenuItem(this));
         }
         refresh() {
             this.menu.removeAll();
