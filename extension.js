@@ -1,37 +1,34 @@
 /* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-const Gdk = imports.gi.Gdk;
-const GLib = imports.gi.GLib;
-const Shell = imports.gi.Shell;
-const St = imports.gi.St;
-const Gio = imports.gi.Gio;
-const Clutter = imports.gi.Clutter;
-const GObject = imports.gi.GObject;
+import Gdk from 'gi://Gdk';
+import GLib from 'gi://GLib';
+import Shell from 'gi://Shell';
+import St from 'gi://St';
+import Gio from 'gi://Gio';
+import Clutter from 'gi://Clutter';
+import GObject from 'gi://GObject';
 
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const Panel = imports.ui.panel;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {PanelMenu} from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+//import {Panel} from 'resource:///org/gnome/shell/ui/panel.js';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Config = imports.misc.config;
-const Me = ExtensionUtils.getCurrentExtension();
+import {Extension, gettext as _, ngettext as __} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
+
+//const ExtensionUtils = imports.misc.extensionUtils;
+//const Me = ExtensionUtils.getCurrentExtension();
+//import * as MyModule from './MyModule.js';
 
 const RDSK_ICON_SIZE = 22;
 const DEFAULT_KEYBOARD = 'en-us';
 const DEFAULT_NETWORK = 'lan';
 
-let _indicator;
-window.rdesktopmenu = {
-    extdatadir: ExtensionUtils.getCurrentExtension().path,
-    shell_version: parseInt(Config.PACKAGE_VERSION.split('.')[1], 10)
-};
-
 var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
 
     _init(conf) {
         super._init({ style_class: 'rdesktop-menu-item' });
-        global.log('init ' + conf.name);
+        console.log('init ' + conf.name);
 
         this.label = new St.Label({ text: conf.name, x_expand: true });
         this.add_child(this.label);
@@ -50,7 +47,7 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
 
     _run() {
         try {
-            global.log("Try to run: '" + this.conf.run_safe + "'");
+            console.log("Try to run: '" + this.conf.run_safe + "'");
             GLib.spawn_command_line_async(this.conf.run);
         }
         catch (err) {
@@ -77,7 +74,7 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
 
     _run() {
         try {
-            global.log('calling refresh()');
+            console.log('calling refresh()');
             _indicator.refresh();
         }
         catch (err) {
@@ -110,7 +107,7 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
     }
 
     _createItems() {
-        global.log('starting _createItems()');
+        console.log('starting _createItems()');
         let dir = Gio.file_new_for_path(GLib.get_user_config_dir ()
                                         + "/grdesktop");
         this.conf = [];
@@ -172,7 +169,7 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
             if (res && res.length == 2)
                 return ' /w:' + res[0] + ' /h:' + res[1];
             else
-                global.log('Cannot parse resolution: ' + _res);
+                console.log('Cannot parse resolution: ' + _res);
         }
         return ' /w:1275 /h:962';
     }
@@ -245,7 +242,7 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
                     kf.load_from_file(file.get_path() + "/" + info.get_name(),
                                       GLib.KeyFileFlags.NONE);
                 } catch (e) {
-                    global.log("Cannot load " + info.get_name() + ": " + e);
+                    console.log("Cannot load " + info.get_name() + ": " + e);
                     continue;
                 }
                 const groups = kf.get_groups(); // returns [[n1,nn], len]
@@ -259,27 +256,30 @@ var RDesktopMenu = class RDesktopMenu extends PanelMenu.Button {
 
 };
 
-function init() {
-    //Convenience.initTranslations();
-}
+export default class RDesktopMenuExtension extends Extension {
 
-function enable() {
-    _indicator = new RDesktopMenu();
-    global.log(_indicator);
-    Main.panel._rdpindicator = _indicator;
-    Main.panel.addToStatusArea('rdesktop-menu', _indicator);
-    global.log("RDesktopMenu enabled");
-}
+    init() {
+        //Convenience.initTranslations();
+    }
 
-function disable() {
-    _indicator.destroy();
-    Main.panel._rdpindicator = null;
+    enable() {
+        this._indicator = new RDesktopMenu();
+        console.log(this._indicator);
+        Main.panel._rdpindicator = this._indicator;
+        Main.panel.addToStatusArea('rdesktop-menu', this._indicator);
+        console.log("RDesktopMenu enabled");
+    }
+
+    disable() {
+        this._indicator.destroy();
+        Main.panel._rdpindicator = null;
+    }
 }
 
 /**
  * Re-wrap the Indicator class as a GObject subclass for GNOME Shell 3.32
  */
-global.log("Re-wrap classes");
+console.log("Re-wrap classes");
 RDesktopMenu = GObject.registerClass(
     {GTypeName: 'RDesktopMenuIndicator'},
     RDesktopMenu
