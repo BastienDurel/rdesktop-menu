@@ -9,7 +9,7 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {PanelMenu} from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 //import {Panel} from 'resource:///org/gnome/shell/ui/panel.js';
 
@@ -18,7 +18,7 @@ import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
 //const ExtensionUtils = imports.misc.extensionUtils;
 //const Me = ExtensionUtils.getCurrentExtension();
-//import * as MyModule from './MyModule.js';
+import * as Me from './extension.js';
 
 const RDSK_ICON_SIZE = 22;
 const DEFAULT_KEYBOARD = 'en-us';
@@ -40,8 +40,8 @@ var RDesktopMenuItem = class RDesktopMenuItem extends PopupMenu.PopupBaseMenuIte
         let icon = new St.Icon({ icon_name: icon_name,
                                  icon_size: RDSK_ICON_SIZE });
         let button = new St.Button({ child: icon });
-        button.connect('clicked', () => { this._run(); });
-        this.connect('button-press-event', () => { this._run(); });
+        button.connect('clicked', this._run.bind(this));
+        this.connect('button-press-event', this._run.bind(this));
         this.add_child(button);
     }
 
@@ -74,8 +74,8 @@ var RDesktopRefreshMenuItem = class RDesktopRefreshMenuItem extends PopupMenu.Po
 
     _run() {
         try {
-            console.log('calling refresh()');
-            _indicator.refresh();
+            console.log('calling refresh()', Me);
+            Me._indicator.refresh();
         }
         catch (err) {
             Main.notifyError('Error', err.message);
@@ -263,8 +263,8 @@ export default class RDesktopMenuExtension extends Extension {
     }
 
     enable() {
+        console.log("enabling RDesktopMenu");
         this._indicator = new RDesktopMenu();
-        console.log(this._indicator);
         Main.panel._rdpindicator = this._indicator;
         Main.panel.addToStatusArea('rdesktop-menu', this._indicator);
         console.log("RDesktopMenu enabled");
