@@ -17,6 +17,7 @@ build:
   script:
     - npm install
     - make lint
+    - apt update && apt install -y zip
     - make package
   artifacts:
     paths:
