@@ -1,8 +1,6 @@
 /* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-import Gdk from 'gi://Gdk';
 import GLib from 'gi://GLib';
-import Shell from 'gi://Shell';
 import St from 'gi://St';
 import Gio from 'gi://Gio';
 import Clutter from 'gi://Clutter';
@@ -12,28 +10,21 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import {Extension, gettext as _, ngettext as __} from 'resource:///org/gnome/shell/extensions/extension.js';
-import * as Config from 'resource:///org/gnome/shell/misc/config.js';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import * as Me from './extension.js';
-
-const RDSK_ICON_SIZE = 22;
-const DEFAULT_KEYBOARD = 'en-us';
+const RDSK_ICON_SIZE = 20;
 const DEFAULT_NETWORK = 'lan';
 
 export default class RDesktopMenuExtension extends Extension {
-	  constructor(metadata) {
-		    super(metadata);
-	  }
     init() {
-        //Convenience.initTranslations();
+        // Convenience.initTranslations();
     }
     enable() {
-        console.log("enabling RDesktopMenu");
+        console.log('enabling RDesktopMenu');
         this._indicator = new RDesktopMenu();
         Main.panel._rdpindicator = this._indicator;
         Main.panel.addToStatusArea('rdesktop-menu', this._indicator);
-        console.log("RDesktopMenu enabled");
+        console.log('RDesktopMenu enabled');
     }
     disable() {
         this._indicator.destroy();
@@ -43,14 +34,8 @@ export default class RDesktopMenuExtension extends Extension {
 }
 
 const RDesktopMenuItem = GObject.registerClass(
-	  {
-		    _TimeoutId: null,
-		    _FirstTimeoutId: null,
-		    _updateProcess_sourceId: null,
-		    _updateProcess_stream: null,
-		    _updateProcess_pid: null,
-		    _updateList: [],
-	  },
+    {
+    },
     class RDesktopMenuItem extends PopupMenu.PopupBaseMenuItem {
         _init(conf) {
             super._init({ style_class: 'rdesktop-menu-item' });
@@ -83,14 +68,8 @@ const RDesktopMenuItem = GObject.registerClass(
 );
 
 const RDesktopMenu = GObject.registerClass(
-	  {
-		    _TimeoutId: null,
-		    _FirstTimeoutId: null,
-		    _updateProcess_sourceId: null,
-		    _updateProcess_stream: null,
-		    _updateProcess_pid: null,
-		    _updateList: [],
-	  },
+    {
+    },
     class RDesktopMenu extends PanelMenu.Button {
         _init() {
             super._init(0, 'server');
@@ -112,9 +91,10 @@ const RDesktopMenu = GObject.registerClass(
         }
         _createItems() {
             this.refreshButton = new PopupMenu.PopupMenuItem(_('Refresh'));
+            this.refreshButton.label.x_expand = true;
             this.refreshButton.connect('activate', this.refresh.bind(this));
-            //let icon = new St.Icon({ icon_name: 'view-refresh-symbolic', icon_size: RDSK_ICON_SIZE });
-            //this.refreshButton
+            let icon = new St.Icon({ icon_name: 'view-refresh-symbolic', icon_size: RDSK_ICON_SIZE });
+            this.refreshButton.add_child(icon);
             //this.menu.addMenuItem(this.refreshButton);
             //this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             console.log('starting _createItems()');
