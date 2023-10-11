@@ -16,10 +16,6 @@ const RDSK_ICON_SIZE = 20;
 const DEFAULT_NETWORK = 'lan';
 
 export default class RDesktopMenuExtension extends Extension {
-    init() {
-        // Convenience.initTranslations();
-    }
-
     enable() {
         console.log('enabling RDesktopMenu');
         this._indicator = new RDesktopMenu();
