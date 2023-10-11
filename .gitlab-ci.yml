@@ -13,7 +13,7 @@ deploy:
 
 build:
   stage: build
-  image: nodejs
+  image: node:latest
   script:
     - npm install
     - make lint
