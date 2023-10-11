@@ -1,4 +1,6 @@
 image: localhost:5000/deploy
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 
 deploy:
   stage: deploy
@@ -11,7 +13,11 @@ deploy:
 
 build:
   stage: build
-  script: zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json stylesheet.css README.md example.conf
+  image: nodejs
+  script:
+    - cp gnome-shell-extensions/lint/* .
+    - npm install
+    - zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json stylesheet.css README.md example.conf
   artifacts:
     paths:
       - rdesktop-menu@bastien.git.geekwu.org.zip

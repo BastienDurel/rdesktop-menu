@@ -10,3 +10,7 @@ install: $(SRC)
 package: $(ZIP)
 $(ZIP): $(SRC)
 	zip -j $@ *.js metadata.json stylesheet.css README.md example.conf
+node_modules:
+	npm install
+lint: $(SRC) node_modules
+	./node_modules/eslint/bin/eslint.js extension.js

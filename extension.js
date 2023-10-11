@@ -19,6 +19,7 @@ export default class RDesktopMenuExtension extends Extension {
     init() {
         // Convenience.initTranslations();
     }
+
     enable() {
         console.log('enabling RDesktopMenu');
         this._indicator = new RDesktopMenu();
@@ -26,6 +27,7 @@ export default class RDesktopMenuExtension extends Extension {
         Main.panel.addToStatusArea('rdesktop-menu', this._indicator);
         console.log('RDesktopMenu enabled');
     }
+
     disable() {
         this._indicator.destroy();
         this._indicator = null;
@@ -55,6 +57,7 @@ const RDesktopMenuItem = GObject.registerClass(
             this.connect('activate', this._run.bind(this));
             this.add_child(button);
         }
+
         _run() {
             try {
                 console.log("Try to run: '" + this.conf.run_safe + "'");
