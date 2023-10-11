@@ -15,9 +15,9 @@ build:
   stage: build
   image: nodejs
   script:
-    - cp gnome-shell-extensions/lint/* .
     - npm install
-    - zip -j rdesktop-menu@bastien.git.geekwu.org.zip *.js metadata.json stylesheet.css README.md example.conf
+    - make lint
+    - make package
   artifacts:
     paths:
       - rdesktop-menu@bastien.git.geekwu.org.zip
