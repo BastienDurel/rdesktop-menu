@@ -111,24 +111,20 @@ const RDesktopMenu = GObject.registerClass(
             if (dir.query_exists(null))
                 this._listDir(dir);
 
-            for (let srvid = 0; srvid < this.conf.length; srvid++) {
-                const fname = this.conf[srvid].folder;
-                if (fname) {
-                    if (!this._folders[fname]) {
-                        console.log(`Create folder ${fname}`);
-                        this._folders[fname] = new PopupMenu.PopupSubMenuMenuItem(fname);
-                        this.menu.addMenuItem(this._folders[fname]);
-                    }
+            this.conf.map(item => item.folder).filter(fname => !!fname).forEach(fname => {
+                if (!this._folders[fname]) {
+                    console.log(`Create folder ${fname}`);
+                    this._folders[fname] = new PopupMenu.PopupSubMenuMenuItem(fname);
+                    this.menu.addMenuItem(this._folders[fname]);
                 }
-            }
-            for (let srvid = 0; srvid < this.conf.length; srvid++) {
-                let item = new RDesktopMenuItem(this.conf[srvid]);
-                const fname = this.conf[srvid].folder;
-                if (fname)
-                    this._folders[fname].menu.addMenuItem(item);
+            });
+            this.conf.forEach(it => {
+                const item = new RDesktopMenuItem(it);
+                if (it.folder)
+                    this._folders[it.folder].menu.addMenuItem(item);
                 else
                     this.menu.addMenuItem(item);
-            }
+            });
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.menu.addMenuItem(this.refreshButton);
