@@ -74,6 +74,7 @@ const RDesktopMenu = GObject.registerClass(
         _init() {
             super._init(0, 'server');
             this.items = [];
+            this._folders = {};
             let hbox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
             let icon = new St.Icon({
                 icon_name: 'network-workgroup-symbolic',
@@ -111,8 +112,22 @@ const RDesktopMenu = GObject.registerClass(
                 this._listDir(dir);
 
             for (let srvid = 0; srvid < this.conf.length; srvid++) {
+                const fname = this.conf[srvid].folder;
+                if (fname) {
+                    if (!this._folders[fname]) {
+                        console.log(`Create folder ${fname}`);
+                        this._folders[fname] = new PopupMenu.PopupSubMenuMenuItem(fname);
+                        this.menu.addMenuItem(this._folders[fname]);
+                    }
+                }
+            }
+            for (let srvid = 0; srvid < this.conf.length; srvid++) {
                 let item = new RDesktopMenuItem(this.conf[srvid]);
-                this.menu.addMenuItem(item);
+                const fname = this.conf[srvid].folder;
+                if (fname)
+                    this._folders[fname].menu.addMenuItem(item);
+                else
+                    this.menu.addMenuItem(item);
             }
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -120,6 +135,7 @@ const RDesktopMenu = GObject.registerClass(
         }
 
         refresh() {
+            this._folders = {};
             this.menu.removeAll();
             this._createItems();
         }
@@ -176,6 +192,8 @@ const RDesktopMenu = GObject.registerClass(
 
             if (kf.has_key(name, 'icon_name'))
                 current.icon_name = kf.get_string(name, 'icon_name');
+            if (kf.has_key(name, 'folder'))
+                current.folder = kf.get_string(name, 'folder');
             if (kf.has_key(name, 'run')) {
                 current.run = kf.get_string(name, 'run');
             } else {
