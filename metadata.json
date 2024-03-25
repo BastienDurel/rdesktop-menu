@@ -3,7 +3,8 @@
   "extension-id": "rdesktop-menu",
   "name": "Rdesktop launcher",
   "shell-version": [
-    "45"
+    "45",
+    "46"
   ],
   "url": "https://git.geekwu.org/bastien/rdesktop-menu",
   "uuid": "rdesktop-menu@bastien.git.geekwu.org",
