@@ -162,7 +162,12 @@ const RDesktopMenu = GObject.registerClass(
 
         _getFreeRdp(kf, group) {
             var key = 'freerdp';
-            return kf.has_key(group, key) && kf.get_string(group, key) === '1';
+            return kf.has_key(group, key) && (kf.get_string(group, key) === '1' || kf.get_string(group, key) === '2');
+        }
+
+        _getFreeRdp3(kf, group) {
+            var key = 'freerdp';
+            return kf.has_key(group, key) && kf.get_string(group, key) === '3';
         }
 
         _getExtra(kf, group) {
@@ -204,9 +209,13 @@ const RDesktopMenu = GObject.registerClass(
                 let domain = this._getSw(kf, name, 'domain', 'd');
                 let extra = this._getExtra(kf, name);
                 let freerdp = this._getFreeRdp(kf, name);
-                if (freerdp) {
+                let freerdp3 = this._getFreeRdp3(kf, name);
+                if (freerdp || freerdp3) {
+                    let bin = freerdp3 ? 'xfreerdp3' : 'xfreerdp';
+                    let kb = freerdp3 ? '/kbd:layout:0x00020409' : '/kbd:0x00020409';
+                    let nocert = freerdp3 ? '/cert:ignore' : '/cert-ignore';
                     current.run =
-                        `xfreerdp /cert-ignore +clipboard /bpp:24 /kbd:0x00020409 /drive:tmp,/tmp ${
+                        `${bin} ${nocert} +clipboard /bpp:24 ${kb} /drive:tmp,/tmp ${
                             this._getXFSw(kf, name, 'sec', 'sec')
                         }${this._getXFRes(kf, name)
                         }${this._getXFSw(kf, name, 'user', 'u')
